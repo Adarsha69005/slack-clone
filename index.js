@@ -4,6 +4,7 @@ import express from 'express';
 import http from 'http';
 import typeDefs from './schema';
 import resolvers from './resolvers';
+import models from './models';
 
 
 async function startApolloServer(typeDefs, resolvers) {
@@ -19,7 +20,8 @@ async function startApolloServer(typeDefs, resolvers) {
   });
 
   // More required logic for integrating with Express
-  await server.start();
+  await models.sequelize.sync();
+  await server.start()
   server.applyMiddleware({
     app,
 
