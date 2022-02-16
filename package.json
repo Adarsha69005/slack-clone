@@ -16,8 +16,11 @@
     "nodemon": "^2.0.15"
   },
   "dependencies": {
+    "@graphql-tools/load-files": "^6.5.3",
+    "@graphql-tools/merge": "^8.2.2",
     "apollo-server-core": "^3.6.3",
     "apollo-server-express": "^3.6.3",
+    "cors": "^2.8.5",
     "express": "^4.17.2",
     "graphql": "^16.3.0",
     "pg": "^8.7.3",

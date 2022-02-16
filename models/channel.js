@@ -4,11 +4,14 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.STRING,
         },
         public: DataTypes.BOOLEAN,
-    });
+    }, { underscored: true});
 
     Channel.associate = (models) => {
         Channel.belongsTo(models.Team, {
-            foreignKey: 'teamId',
+            foreignKey: {
+                name: 'teamId',
+                field: 'team_id',
+            },
         });
     };
 
