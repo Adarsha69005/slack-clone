@@ -9,6 +9,10 @@ import path from 'path';
 import models from './models';
 import { mergeTypeDefs, mergeResolvers } from '@graphql-tools/merge';
 import { loadFilesSync } from '@graphql-tools/load-files';
+import { refreshTokenServer } from './auth';
+
+const SECRET = "qwertyasdfghjkl"
+const SECRET2 = "AAqwertyasdfghjkl"
 
 const typeDefs = mergeTypeDefs(loadFilesSync(path.join(__dirname, './schema')));
 
@@ -25,16 +29,46 @@ async function startApolloServer(typeDefs, resolvers) {
     credentials: true
   }
 
+  const addUser = async (req, res) => {
+    console.log(req.header);
+    const token = req.headers['x-token'];
+    if(token) {
+      try {
+        const { user } = jwt.verify(token, SECRET);
+        // req.user = user;
+        return user;
+      } catch (err) {
+        const refreshToken = req.headers['x-refresh-token'];
+        const newTokens = await refreshTokenServer(token, refreshToken, models, SECRET, SECRET2);
+        if(newTokens.token && newTokens.refreshToken) {
+          res.set('Access-Control-Expose-Headers', 'x-token, x-refresh-token');
+          res.set('x-token', newTokens.token);
+          res.set('x-refresh-token', newTokens.refreshToken);
+        }
+        // req.user = newTokens.user;
+         const user = newTokens.user;
+        return user
+      }
+    }
+  };
+
   // Same ApolloServer initialization as before, plus the drain plugin.
   const server = new ApolloServer({
     typeDefs,
     cors: cors(corsOptions),
     resolvers,
-    context: { 
-      models,
-      user: {
-        id: 1,
-      },
+    context: async ({req, res}) => {
+      // models
+      // ['x-token'],['x-refresh-token']
+      console.log(req.header)
+      const user = await addUser(req, res);
+      console.log('at indexuser:',user);
+      // const token = req.headers.authorization || '';
+      
+      // user = req.user
+      // SECRET
+      // SECRET2
+      return {models, user, SECRET, SECRET2}
      },
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });

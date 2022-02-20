@@ -7,15 +7,41 @@ import {
   ApolloClient,
   InMemoryCache,
   ApolloProvider,
+  createHttpLink,
 } from "@apollo/client";
+import { setContext } from '@apollo/client/link/context';
 
 const cache = new InMemoryCache();
 
+const httpLink = createHttpLink({
+  uri: 'http://localhost:4000/graphql',
+});
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = localStorage.getItem('token');
+  const refreshToken = localStorage.getItem('refreshToken');
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      // headers['x-token']
+      // headers['x-refresh-token']
+      ['x-token']: token ? token : "",
+      ['x-refresh-token']: refreshToken ? refreshToken : "",
+      
+      // authorization: token ? token : "",
+      // authorization: refreshToken ? refreshToken : "",
+    }
+  }
+});
+
 const client = new ApolloClient({
   // Provide required constructor fields
+  
+  // uri: 'http://localhost:4000/graphql',
+  link: authLink.concat(httpLink),
   cache: cache,
-  uri: 'http://localhost:4000/graphql',
-
   // Provide some optional constructor fields
   name: 'react-web-client',
   version: '1.3',

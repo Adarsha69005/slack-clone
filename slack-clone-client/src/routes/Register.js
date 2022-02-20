@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Header , Input, Button, Message} from 'semantic-ui-react'
+import { Container, Header , Input, Button, Message, Form} from 'semantic-ui-react'
 import { gql, useMutation } from '@apollo/client';
 import { useNavigate} from 'react-router-dom';
 
@@ -31,7 +31,7 @@ const Register = () => {
 
     let navigate = useNavigate();
 
-    function getValues(e){
+    const getValues = (e) => {
         e.preventDefault();
         const {name, value} = e.target;
         if(name === 'email') {
@@ -46,6 +46,7 @@ const Register = () => {
     }
 
     const onSubmit = async (e) => {
+        const errorList = {};
         e.preventDefault();
         setUsernameError('');
         setEmailError('');
@@ -82,18 +83,20 @@ const Register = () => {
     const [registerUser, {data}] = useMutation(REGISTER_USER_MUTATION);
     
     return (
+
     <Container text>
         <Header as='h2'>Register</Header>
-        <Input error={!!usernameError} fluid value={username} name='username' placeholder='Username' onChange={getValues} />
-        <Input error={!!emailError} fluid value={email} name='email' placeholder='Email' onChange={getValues}  />
-        <Input error={!!passwordError} fluid value={password} name='password' type='password' placeholder='Password' onChange={getValues} />
+        <Form>
+        <Form.Field error={!!usernameError}><Input  fluid value={username} name='username' placeholder='Username' onChange={getValues} /></Form.Field>
+        <Form.Field error={!!emailError} ><Input fluid value={email} name='email' placeholder='Email' onChange={getValues}  /></Form.Field>    
+         <Form.Field error={!!passwordError}><Input  fluid value={password} name='password' type='password' placeholder='Password' onChange={getValues} /></Form.Field>    
         <Button onClick={onSubmit}>Submit</Button> 
+        </Form>
         {(usernameError || emailError || passwordError || nameError) ? 
         <Message
             error
             header= "There was some errors with your submission"
             list= {[usernameError || emailError || passwordError || nameError]}
-            // list= {[usernameError,emailError,passwordError,nameError]}
          /> 
          : null}      
     </Container>);
