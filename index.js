@@ -30,7 +30,6 @@ async function startApolloServer(typeDefs, resolvers) {
   }
 
   const addUser = async (req, res) => {
-    console.log(req.header);
     const token = req.headers['x-token'];
     if(token) {
       try {
@@ -60,7 +59,6 @@ async function startApolloServer(typeDefs, resolvers) {
     context: async ({req, res}) => {
       // models
       // ['x-token'],['x-refresh-token']
-      console.log(req.header)
       const user = await addUser(req, res);
       console.log('at indexuser:',user);
       // const token = req.headers.authorization || '';
