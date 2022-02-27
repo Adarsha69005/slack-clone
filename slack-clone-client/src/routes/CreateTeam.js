@@ -9,6 +9,9 @@ const CREATE_TEAM_MUTATION = gql`
         createTeam (name: $name)
         {
           ok
+          team {
+            id
+          }
           errors {
             path
             message
@@ -23,6 +26,7 @@ const Team = () => {
     // const [password, setPassword] = useState('');
     const [nameError, setNameError] = useState('');
     // const [passwordError, setPasswordError] = useState('');
+    let navigate = useNavigate();
 
     const getValues = (e) => {
         e.preventDefault();
@@ -39,12 +43,10 @@ const Team = () => {
         console.log(name);
         const response = await createTeam({variables: {name: name}});
         console.log('response:',response);
-        // const {ok,errors } = response.data.createTeam;
-        // if(ok) {
-        //     localStorage.setItem('token', token);
-        //     localStorage.setItem('refreshToken', refreshToken);
-        // }
-    //         navigate("/");
+        const {ok,errors, team } = response.data.createTeam;
+        if(ok) {
+            navigate(`/view-team/${team.id}`);
+        }
         // } else {
         //     errors.forEach(({ path, message}) => {
         //         if(`${path}` === 'email') {
