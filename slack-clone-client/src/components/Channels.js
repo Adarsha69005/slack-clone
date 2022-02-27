@@ -53,7 +53,7 @@ export default ({teamName, username, channels, users, onAddChannelClick}) => (
         </PushLeft>
         <div>
             <SideBarList>
-                <SideBarListHeader>Channels <Icon className="add plus circle" /></SideBarListHeader>
+                <SideBarListHeader>Channels <Icon className="add plus circle" onClick={onAddChannelClick} /></SideBarListHeader>
                 {channels.map(channel)}
             </SideBarList>
         </div>

@@ -1,26 +1,28 @@
-import React from "react";
+import {React, useState, useEffect} from "react";
 import {gql, useQuery} from '@apollo/client';
 import Channels from '../components/Channels';
 import Teams from '../components/Team';
 import findIndex from 'lodash/findIndex';
 import decode from 'jwt-decode';
+import ChannelModal from "../components/AddChannelModal";
+import allTeamsQuery from "../graphql/team";
 
 
-const allTeamsQuery = gql`
-    query allTeams {
-        allTeams {
-            id
-            name
-            channels {
-                id
-                name
-            }
-        }
-    }
-`;
+
 
 
 const Sidebar = ({currentTeamId}) => {
+
+    const [openModal, SetModal] = useState(false);
+    
+    const onAddChannel = (e) => {
+        if(e){
+            e.preventDefault();
+        }
+       
+        SetModal(prevState => !prevState)
+    }
+
     const { loading, error, data } = useQuery(allTeamsQuery);
     console.log('data:',data);
     if(loading) return <p>Loading...</p>;
@@ -43,7 +45,8 @@ const Sidebar = ({currentTeamId}) => {
             id: t.id,
             letter: t.name.charAt(0).toUpperCase(),
         }))} />
-        <Channels teamName={team.name} username={username} channels={team.channels} users={[{id:1, name:"slackbot"}]} />
+        <Channels teamName={team.name} username={username} channels={team.channels} users={[{id:1, name:"slackbot"}]} onAddChannelClick={onAddChannel} />
+        <ChannelModal open={openModal} onAddChannelClick={onAddChannel} />
         </>);
 };
 
